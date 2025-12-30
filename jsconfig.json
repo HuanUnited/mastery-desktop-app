@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/renderer/*"
+      ]
+    }
+  },
+  "include": [
+    "src/renderer/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dist-electron"
+  ]
+}

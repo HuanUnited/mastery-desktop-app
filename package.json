@@ -1,0 +1,60 @@
+{
+  "name": "mastery-learning-app",
+  "version": "1.0.0",
+  "description": "Offline desktop app for systematic learning through deliberate practice",
+  "author": "Duong Cong Huan",
+  "license": "MIT",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "electron:dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "electron:build": "electron-builder --win --x64",
+    "electron:build-mac": "electron-builder --mac",
+    "electron:build-linux": "electron-builder --linux"
+  },
+  "build": {
+    "appId": "com.masterylearning.app",
+    "productName": "Mastery Learning App",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "dist-electron/**/*",
+      "electron/**/*",
+      "dist/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "build/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "concurrently": "^8.2.2",
+    "electron": "^28.1.0",
+    "electron-builder": "^24.13.3",
+    "electron-rebuild": "^3.2.9",
+    "vite": "^5.0.11",
+    "wait-on": "^7.2.0"
+  },
+  "dependencies": {
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  }
+}

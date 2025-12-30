@@ -1,0 +1,139 @@
+Mastery Learning App License
+Copyright (c) 2025 [Your Name/Organization]
+
+=============================================================================
+TERMS AND CONDITIONS
+=============================================================================
+
+1. DEFINITIONS
+
+"Software" refers to the Mastery Learning Desktop App, including all source 
+code, documentation, and associated files in this repository.
+
+"You" refers to any individual or entity exercising rights under this License.
+
+"Non-Commercial Use" means use that is not primarily intended for or directed 
+toward commercial advantage or monetary compensation.
+
+"Attribution" means clearly crediting the original author(s) in any derivative 
+work, distribution, or public display of the Software.
+
+=============================================================================
+
+2. GRANT OF RIGHTS (Non-Commercial Use Only)
+
+Subject to the terms and conditions of this License, You are granted a 
+worldwide, royalty-free, non-exclusive license to:
+
+✓ Use the Software for personal, educational, or research purposes
+✓ Study how the Software works and modify it for personal use
+✓ Share and distribute copies of the Software
+✓ Create and distribute modified versions (derivative works)
+
+PROVIDED THAT:
+
+a) All uses remain NON-COMMERCIAL
+b) You include prominent attribution to the original author(s)
+c) You include this license and copyright notice in all copies
+d) You clearly mark any modifications you make
+
+=============================================================================
+
+3. ATTRIBUTION REQUIREMENTS
+
+You must retain and display in any distributed copy or derivative work:
+
+• Original copyright notice
+• Link to the original repository: https://github.com/[your-username]/mastery-learning-app
+• Clear statement: "Based on Mastery Learning App by [Your Name]"
+• This license file in its entirety
+
+In user-facing applications, attribution must appear in:
+- The application's "About" or "Credits" section
+- README or documentation files
+- Splash screen or settings (if applicable)
+
+=============================================================================
+
+4. PROHIBITED COMMERCIAL USES
+
+You may NOT, without explicit written permission from the copyright holder:
+
+✗ Sell the Software or derivative works
+✗ Offer the Software as a paid service (SaaS)
+✗ Use the Software in any commercial product or service
+✗ Monetize the Software through ads, subscriptions, or fees
+✗ Include the Software in any commercial offering
+
+Exception: The original copyright holder reserves all commercial rights and 
+may monetize the Software at their sole discretion.
+
+=============================================================================
+
+5. ALLOWED NON-COMMERCIAL USES (Examples)
+
+✓ Personal learning and skill development
+✓ Academic research and education
+✓ Internal use by non-profit organizations
+✓ Portfolio demonstration (with attribution)
+✓ Open-source contributions to this repository
+✓ Deployment for personal or family use
+
+=============================================================================
+
+6. COMMERCIAL LICENSING
+
+For commercial use, including but not limited to:
+- Integration into commercial products
+- Offering as a paid service
+- Corporate/enterprise deployment for profit-generating activities
+
+Please contact the copyright holder at [your-email@example.com] to negotiate 
+a separate commercial license.
+
+=============================================================================
+
+7. CONTRIBUTIONS
+
+By contributing to this repository, you agree that:
+
+• Your contributions will be licensed under the same terms
+• You grant the copyright holder the right to relicense your contributions 
+  under different terms (including commercial licenses)
+• Your contributions are your original work or properly licensed
+
+=============================================================================
+
+8. NO WARRANTY
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+=============================================================================
+
+9. TERMINATION
+
+This license terminates automatically if You fail to comply with its terms.
+Upon termination, You must cease all use and destroy all copies of the Software.
+
+=============================================================================
+
+10. UPDATES TO LICENSE
+
+The copyright holder reserves the right to publish updated versions of this 
+license. You may choose to use the Software under the terms of the version 
+under which you originally received it, or any later version.
+
+=============================================================================
+
+For questions about licensing, commercial use, or permissions:
+Contact: [your-email@example.com]
+GitHub: https://github.com/[your-username]/mastery-learning-app
+
+Last updated: 2025-12-30
