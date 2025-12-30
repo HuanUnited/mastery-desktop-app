@@ -1,23 +1,15 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
-
-const isDev = process.env.NODE_ENV !== 'production';
-
-// Disable GPU acceleration (fixes WSL2 GPU errors)
-app.disableHardwareAcceleration();
+const fs = require('fs');
 
 let mainWindow;
 
-// Load handlers BEFORE app.whenReady
-require('./database.js');
-require('./ipc-handlers.js');
-
-console.log('✅ IPC handlers loaded');
-
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1600,
-    height: 1000,
+    width: 1400,
+    height: 900,
+    show: true,
+    backgroundColor: '#ffffff',
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,
@@ -25,11 +17,15 @@ function createWindow() {
     }
   });
 
-  if (isDev) {
-    mainWindow.loadURL('http://localhost:5173');
+  const indexPath = path.join(__dirname, '../dist/index.html');
+  
+  mainWindow.loadFile(indexPath)
+    .then(() => console.log('✅ Loaded'))
+    .catch(err => console.error('❌ Load error:', err));
+
+  // Remove DevTools in production
+  if (!app.isPackaged) {
     mainWindow.webContents.openDevTools();
-  } else {
-    mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
   }
 
   mainWindow.on('closed', () => {
@@ -38,18 +34,23 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-  console.log('🚀 App ready, creating window...');
+  console.log('🚀 App starting...');
+  
+  try {
+    const { initDatabase } = require('./database');
+    initDatabase();
+    console.log('✅ Database OK');
+    
+    // IPC handlers will now import db directly
+    require('./ipc-handlers');
+    console.log('✅ IPC handlers loaded');
+  } catch (err) {
+    console.error('❌ Error:', err);
+  }
+  
   createWindow();
 });
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
-
-app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
+  app.quit();
 });

@@ -1,5 +1,5 @@
 const { ipcMain, dialog } = require('electron');
-const { db } = require('./database.js');
+const { getDb } = require('./database.js');
 const fs = require('fs');
 const path = require('path');
 const { app } = require('electron');
@@ -8,10 +8,11 @@ console.log('📡 Registering IPC handlers...');
 
 // ErrorLog handlers
 ipcMain.handle('db:insertErrorLog', (event, data) => {
+  const db = getDb();  // ← Get db instance
   console.log('📝 Inserting error log:', data.ProblemID);
   
   // Get all previous attempts for this problem
-  const previousAttempts = db.prepare(
+  const previousAttempts = getDb().prepare(
     'SELECT * FROM ErrorLog WHERE ProblemID = ? ORDER BY DateTimeGMT7 DESC'
   ).all(data.ProblemID);
   
@@ -24,7 +25,7 @@ ipcMain.handle('db:insertErrorLog', (event, data) => {
   
   console.log(`  → Batch ${batchNumber} (${batchID}), Index: ${batchAttemptIndex}, Total: ${totalAttempts}`);
   
-  const stmt = db.prepare(`
+  const stmt = getDb().prepare(`
     INSERT INTO ErrorLog (
       Subject, MaterialNameEN, MaterialNameRU, ProblemID, ProblemTitle,
       BatchID, BatchAttemptIndex, AttemptNumber, UsedResources, Successful,
@@ -63,16 +64,16 @@ ipcMain.handle('db:getErrorLogs', (event, filters = {}) => {
   
   query += ' ORDER BY DateTimeGMT7 DESC';
   
-  return db.prepare(query).all(...params);
+  return getDb().prepare(query).all(...params);
 });
 
 ipcMain.handle('db:getLastErrorEntry', () => {
-  return db.prepare('SELECT * FROM ErrorLog ORDER BY id DESC LIMIT 1').get();
+  return getDb().prepare('SELECT * FROM ErrorLog ORDER BY id DESC LIMIT 1').get();
 });
 
 // MaterialLog handlers
 ipcMain.handle('db:upsertMaterialLog', (event, data) => {
-  const stmt = db.prepare(`
+  const stmt = getDb().prepare(`
     INSERT INTO MaterialLog (
       Subject, MaterialID, MaterialNameEN, Status, TotalProblems,
       ProblemsSolved, AvgAttemptsLastBatch, Commentary, ResourcesList,
@@ -94,12 +95,12 @@ ipcMain.handle('db:upsertMaterialLog', (event, data) => {
 });
 
 ipcMain.handle('db:getMaterialLogs', () => {
-  return db.prepare('SELECT * FROM MaterialLog ORDER BY LastReviewedGMT7 DESC').all();
+  return getDb().prepare('SELECT * FROM MaterialLog ORDER BY LastReviewedGMT7 DESC').all();
 });
 
 // RussianDrillingLog handlers
 ipcMain.handle('db:insertRussianDrilling', (event, data) => {
-  const stmt = db.prepare(`
+  const stmt = getDb().prepare(`
     INSERT INTO RussianDrillingLog (
       Subject, MaterialID, MaterialNameEN, MaterialNameRU, AttemptNumber,
       Status, ErrorsRU, ResolutionStrategyRU, CommentaryRU,
@@ -115,16 +116,16 @@ ipcMain.handle('db:insertRussianDrilling', (event, data) => {
 });
 
 ipcMain.handle('db:getRussianDrillingLogs', () => {
-  return db.prepare('SELECT * FROM RussianDrillingLog ORDER BY DateTimeGMT7 DESC').all();
+  return getDb().prepare('SELECT * FROM RussianDrillingLog ORDER BY DateTimeGMT7 DESC').all();
 });
 
 // Tasklist handlers
 ipcMain.handle('db:getTasks', () => {
-  return db.prepare('SELECT * FROM Tasklist ORDER BY completed ASC, priority DESC, deadline ASC').all();
+  return getDb().prepare('SELECT * FROM Tasklist ORDER BY completed ASC, priority DESC, deadline ASC').all();
 });
 
 ipcMain.handle('db:addTask', (event, task) => {
-  const stmt = db.prepare(`
+  const stmt = getDb().prepare(`
     INSERT INTO Tasklist (task, priority, deadline, createdAt, completed)
     VALUES (?, ?, ?, ?, 0)
   `);
@@ -132,15 +133,15 @@ ipcMain.handle('db:addTask', (event, task) => {
 });
 
 ipcMain.handle('db:toggleTask', (event, id) => {
-  const task = db.prepare('SELECT completed FROM Tasklist WHERE id = ?').get(id);
+  const task = getDb().prepare('SELECT completed FROM Tasklist WHERE id = ?').get(id);
   if (!task) return { success: false };
   const newStatus = task.completed === 1 ? 0 : 1;
-  db.prepare('UPDATE Tasklist SET completed = ? WHERE id = ?').run(newStatus, id);
+  getDb().prepare('UPDATE Tasklist SET completed = ? WHERE id = ?').run(newStatus, id);
   return { success: true };
 });
 
 ipcMain.handle('db:deleteTask', (event, id) => {
-  db.prepare('DELETE FROM Tasklist WHERE id = ?').run(id);
+  getDb().prepare('DELETE FROM Tasklist WHERE id = ?').run(id);
   return { success: true };
 });
 
@@ -155,10 +156,10 @@ ipcMain.handle('db:exportJSON', async () => {
   if (!filePath) return { success: false, message: 'Export cancelled' };
   
   // Get raw data
-  const errorLog = db.prepare('SELECT * FROM ErrorLog').all();
-  const materialLog = db.prepare('SELECT * FROM MaterialLog').all();
-  const russianDrillingLog = db.prepare('SELECT * FROM RussianDrillingLog').all();
-  const tasklist = db.prepare('SELECT * FROM Tasklist').all();
+  const errorLog = getDb().prepare('SELECT * FROM ErrorLog').all();
+  const materialLog = getDb().prepare('SELECT * FROM MaterialLog').all();
+  const russianDrillingLog = getDb().prepare('SELECT * FROM RussianDrillingLog').all();
+  const tasklist = getDb().prepare('SELECT * FROM Tasklist').all();
   
   // Compute analytics for ML/pattern analysis
   const analytics = computeAnalytics(errorLog, materialLog);
@@ -277,29 +278,29 @@ function computeAnalytics(errorLog, materialLog) {
 
 // Get unique subjects
 ipcMain.handle('db:getUniqueSubjects', () => {
-  const subjects = db.prepare('SELECT DISTINCT Subject FROM ErrorLog WHERE Subject IS NOT NULL').all();
+  const subjects = getDb().prepare('SELECT DISTINCT Subject FROM ErrorLog WHERE Subject IS NOT NULL').all();
   return subjects.map(s => s.Subject);
 });
 
 // DELETE handlers
 ipcMain.handle('db:deleteErrorLog', (event, id) => {
-  db.prepare('DELETE FROM ErrorLog WHERE id = ?').run(id);
+  getDb().prepare('DELETE FROM ErrorLog WHERE id = ?').run(id);
   return { success: true };
 });
 
 ipcMain.handle('db:deleteMaterialLog', (event, id) => {
-  db.prepare('DELETE FROM MaterialLog WHERE id = ?').run(id);
+  getDb().prepare('DELETE FROM MaterialLog WHERE id = ?').run(id);
   return { success: true };
 });
 
 ipcMain.handle('db:deleteRussianDrilling', (event, id) => {
-  db.prepare('DELETE FROM RussianDrillingLog WHERE id = ?').run(id);
+  getDb().prepare('DELETE FROM RussianDrillingLog WHERE id = ?').run(id);
   return { success: true };
 });
 
 // UPDATE handlers
 ipcMain.handle('db:updateErrorLog', (event, id, data) => {
-  const stmt = db.prepare(`
+  const stmt = getDb().prepare(`
     UPDATE ErrorLog SET
       ProblemID = @ProblemID,
       ErrorsDescription = @ErrorsDescription,
@@ -319,7 +320,7 @@ console.log('✅ IPC handlers registered');
 ipcMain.handle('db:upsertVocabulary', (event, data) => {
   console.log('📝 Upserting vocabulary:', data.russianWord);
   
-  const stmt = db.prepare(`
+  const stmt = getDb().prepare(`
     INSERT INTO RussianVocabulary (
       russianWord, englishTranslation, subject, materialID, 
       firstSeenDate, lastReviewedDate, reviewCount
@@ -340,7 +341,7 @@ ipcMain.handle('db:getVocabulary', (event, searchTerm = '') => {
   console.log('🔍 Getting vocabulary, search:', searchTerm);
   
   if (searchTerm) {
-    const stmt = db.prepare(`
+    const stmt = getDb().prepare(`
       SELECT * FROM RussianVocabulary 
       WHERE russianWord LIKE ? OR englishTranslation LIKE ?
       ORDER BY lastReviewedDate DESC
@@ -348,11 +349,11 @@ ipcMain.handle('db:getVocabulary', (event, searchTerm = '') => {
     return stmt.all(`%${searchTerm}%`, `%${searchTerm}%`);
   }
   
-  return db.prepare('SELECT * FROM RussianVocabulary ORDER BY lastReviewedDate DESC').all();
+  return getDb().prepare('SELECT * FROM RussianVocabulary ORDER BY lastReviewedDate DESC').all();
 });
 
 ipcMain.handle('db:deleteVocabulary', (event, id) => {
-  db.prepare('DELETE FROM RussianVocabulary WHERE id = ?').run(id);
+  getDb().prepare('DELETE FROM RussianVocabulary WHERE id = ?').run(id);
   return { success: true };
 });
 
@@ -360,7 +361,7 @@ ipcMain.handle('db:deleteVocabulary', (event, id) => {
 ipcMain.handle('db:getSubjectStats', () => {
   console.log('📊 Getting subject statistics');
   
-  const stats = db.prepare(`
+  const stats = getDb().prepare(`
     SELECT 
       Subject,
       COUNT(DISTINCT MaterialID) as totalMaterials,
@@ -380,7 +381,7 @@ ipcMain.handle('db:getSubjectStats', () => {
 ipcMain.handle('db:getMaterialsBySubject', (event, subject) => {
   console.log('📚 Getting materials for subject:', subject);
   
-  return db.prepare(`
+  return getDb().prepare(`
     SELECT * FROM MaterialLog 
     WHERE Subject = ?
     ORDER BY LastReviewedGMT7 DESC
